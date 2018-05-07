@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -e
+$HOST_IP = $1
+
+{% for port,proto in secure_ports %}
+/sbin/iptables -D INPUT -s "${HOST_IP}" -p {{ proto }} --dport {{ port }} -j ACCEPT
+{% endfor %}

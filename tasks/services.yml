@@ -3,6 +3,12 @@
    - name: stop netfilter
      service: name=netfilter-persistent state=stopped
 
+   - name: writes the knockd open/close commands
+     template: src=templates/{{ item }}.j2 dest=/bin/{{ item }} mode=0740
+     with_itmes:
+       - knockd_open
+       - knockd_close
+
    - name: writes the knockd conf
      template: src=templates/knockd.conf.j2 dest=/etc/knockd.conf mode=0640
      notify: start knockd
@@ -20,9 +26,9 @@
      become: yes
      with_items: "{{ open_ports }}"
 
-   - name: drop the rest of traffic
-     iptables: chain=INPUT jump=DROP
-     become: yes
+   #- name: drop the rest of traffic
+   #  iptables: chain=INPUT jump=DROP
+   #  become: yes
 
    - name: save rules
      shell: iptables-save > /etc/iptables/rules.v4

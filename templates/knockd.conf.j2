@@ -5,10 +5,10 @@
     sequence    = {{ open_port_sequence | join(",") }}
     tcpflags    = {{ open_tcp_flags | join(",") }}
     seq_timeout = {{ sequence_timeout }}
-    command     = {{ open_command }}
+    command     = /bin/knockd_open %IP%
 
 [closeSSH]
     sequence    = {{ close_port_sequence | join(",") }}
     tcpflags    = {{ close_tcp_flags | join(",") }}
     seq_timeout = {{ sequence_timeout }}
-    command     = {{ close_command }}
+    command     = /bin/knockd_close %IP%
