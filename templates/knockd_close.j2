@@ -1,6 +1,11 @@
 #!/usr/bin/env bash
-set -e
 HOST_IP=$1
+
+if [[ ${HOST_IP} =~ ^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  echo "$0: ${HOST_IP} is valid"
+else
+  echo "$0: ${HOST_IP} is invalid"
+fi
 
 {% for port,proto in secure_ports %}
 /sbin/iptables -D INPUT -s "${HOST_IP}" -p {{ proto }} --dport {{ port }} -j ACCEPT
