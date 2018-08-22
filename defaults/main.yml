@@ -5,6 +5,6 @@
   secure_ports: []
 
   open_port_sequence: []
-  open_tcp_flags: []
+  open_tcp_flags: ["syn"]
   close_port_sequence: []
-  close_tcp_flags: []
+  close_tcp_flags: ["syn"]
