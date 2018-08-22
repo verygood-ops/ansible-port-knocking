@@ -26,9 +26,9 @@
      become: yes
      with_items: "{{ open_ports }}"
 
-#   - name: drop the rest of traffic
-#     iptables: chain=INPUT jump=DROP
-#     become: yes
+   - name: drop the rest of traffic
+     iptables: chain=INPUT jump=DROP
+     become: yes
 
    - name: save rules
      shell: iptables-save > /etc/iptables/rules.v4
