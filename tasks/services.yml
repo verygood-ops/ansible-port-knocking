@@ -3,9 +3,9 @@
    - name: stop netfilter
      service: name=netfilter-persistent state=stopped
 
-   - name: writes the knockd open/close commands
+   - name: writes the knockd open/close wrappers
      template: src=templates/{{ item }}.j2 dest=/bin/{{ item }} mode=0740
-     with_itmes:
+     with_items:
        - knockd_open
        - knockd_close
 
