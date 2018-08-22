@@ -1,6 +1,7 @@
 ---
   sequence_timeout: 5
   command_timeout: 5
+  open_ports: []
   secure_ports: []
 
   open_port_sequence: []
