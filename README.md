@@ -40,7 +40,7 @@ This is an example of role configuration:
 
     - hosts: servers
       roles:
-         - { role: fcsonline.ansible-port-knocking, port_sequence: [24334,34534,2287], secure_ports: [22], open_ports: [80, 443] }
+         - { role: ansible-port-knocking, port_sequence: [24334,34534,2287], secure_ports: [22], open_ports: [80, 443] }
 
 
 License
