@@ -1,4 +1,9 @@
 ---
   sequence_timeout: 15
   command_timeout: 20
-  open_ports: []
+  secure_ports: []
+
+  open_port_sequence: []
+  open_tcp_flags: []
+  close_port_sequence: []
+  close_tcp_flags: []

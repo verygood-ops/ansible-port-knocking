@@ -21,14 +21,14 @@
      iptables: chain=INPUT ctstate=ESTABLISHED,RELATED jump=ACCEPT
      become: yes
 
-   - name: allow open ports traffic
-     iptables: chain=INPUT destination_port={{ item }} protocol=tcp match=tcp jump=ACCEPT
-     become: yes
-     with_items: "{{ open_ports }}"
+#   - name: allow open ports traffic
+#     iptables: chain=INPUT destination_port={{ item }} protocol=tcp match=tcp jump=ACCEPT
+#     become: yes
+#     with_items: "{{ open_ports }}"
 
-   #- name: drop the rest of traffic
-   #  iptables: chain=INPUT jump=DROP
-   #  become: yes
+#   - name: drop the rest of traffic
+#     iptables: chain=INPUT jump=DROP
+#     become: yes
 
    - name: save rules
      shell: iptables-save > /etc/iptables/rules.v4
