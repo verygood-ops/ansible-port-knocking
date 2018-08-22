@@ -1,7 +1,7 @@
 ---
 
-   - name: stop netfilter
-     service: name=netfilter-persistent state=stopped
+   - name: stop iptables-persistent 
+     service: name=iptables-persistent state=stopped
 
    - name: writes the knockd open/close wrappers
      template: src=templates/{{ item }}.j2 dest=/bin/{{ item }} mode=0740
@@ -33,8 +33,8 @@
    - name: save rules
      shell: iptables-save > /etc/iptables/rules.v4
 
-   - name: start netfilter
-     service: name=netfilter-persistent state=started
+   - name: start iptables-persistent
+     service: name=iptables-persistent state=started
 
    - name: enable knockd conf
      replace: dest=/etc/default/knockd regexp='^(START_KNOCKD=)0$' replace='\g<1>1'
