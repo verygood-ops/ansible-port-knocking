@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 set -e
-$HOST_IP = $1
+HOST_IP=$1
 
 {% for port,proto in secure_ports %}
 if /sbin/iptables -C INPUT -s "${HOST_IP}" -p {{ proto }} --dport {{ port }} -j ACCEPT

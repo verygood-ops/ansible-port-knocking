@@ -1,6 +1,6 @@
 ---
 
-   - name: stop iptables-persistent 
+   - name: stop iptables-persistent
      service: name=iptables-persistent state=stopped
 
    - name: writes the knockd open/close wrappers
@@ -21,10 +21,10 @@
      iptables: chain=INPUT ctstate=ESTABLISHED,RELATED jump=ACCEPT
      become: yes
 
-#   - name: allow open ports traffic
-#     iptables: chain=INPUT destination_port={{ item }} protocol=tcp match=tcp jump=ACCEPT
-#     become: yes
-#     with_items: "{{ open_ports }}"
+   - name: allow open ports traffic
+     iptables: chain=INPUT destination_port={{ item }} protocol=tcp match=tcp jump=ACCEPT
+     become: yes
+     with_items: "{{ open_ports }}"
 
 #   - name: drop the rest of traffic
 #     iptables: chain=INPUT jump=DROP
