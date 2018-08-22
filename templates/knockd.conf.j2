@@ -1,14 +1,18 @@
 [options]
     UseSyslog
 
+{% if open_port_sequence %}
 [openPorts]
     sequence    = {{ open_port_sequence | join(",") }}
     tcpflags    = {{ open_tcp_flags | join(",") }}
     seq_timeout = {{ sequence_timeout }}
     command     = /bin/knockd_open %IP%
+{% endif %}
 
+{% if close_port_sequence %}
 [closePorts]
     sequence    = {{ close_port_sequence | join(",") }}
     tcpflags    = {{ close_tcp_flags | join(",") }}
     seq_timeout = {{ sequence_timeout }}
     command     = /bin/knockd_close %IP%
+{% endif %}
