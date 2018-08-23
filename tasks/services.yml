@@ -11,7 +11,7 @@
 
    - name: writes the knockd conf
      template: src=templates/knockd.conf.j2 dest=/etc/knockd.conf mode=0640
-     notify: start knockd
+     notify: restart knockd
 
    - name: allow loopback interface traffic
      iptables: chain=INPUT in_interface=lo jump=ACCEPT
