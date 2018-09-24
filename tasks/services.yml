@@ -39,3 +39,12 @@
    - name: enable knockd conf
      replace: dest=/etc/default/knockd regexp='^(START_KNOCKD=)0$' replace='\g<1>1'
      notify: restart knockd
+
+   - name: add iptables knockd cleaner cronjob
+     cron:
+       name: "iptables knockd cleaner"
+       state: present
+       minute: "0"
+       hour: "6"
+       weekday: "6" # Sat
+       job: 'iptables-save | grep {% for p in secure_ports %} -e "--dport {{ p[0] }} -j ACCEPT" {% endfor %} | sed -e "s/-A /-D /" | xargs -t -I {} bash -c "iptables {}"'
