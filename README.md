@@ -24,6 +24,7 @@ A description of the settable variables for this role should go here, including 
 - **open_ports**: array of ports always available (Example: *[80, 443]*) (Default: [])
 - sequence_timeout: number of seconds to be able to introduce the knocking sequence (Default: 15)
 - command_timeout: number of seconds to be able to introduce a command (Default: 20)
+- knockd_iptables_gc_cron: dictionary of time points (minute, hour, weekday) when cron should perform iptables task.
 
 We recommend to store the `port_sequence` variable in a secure place, like
 [Ansible Vault](http://docs.ansible.com/ansible/playbooks_vault.html)

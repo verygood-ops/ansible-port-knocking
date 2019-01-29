@@ -44,7 +44,7 @@
      cron:
        name: "iptables knockd cleaner"
        state: present
-       minute: "0"
-       hour: "6"
-       weekday: "6" # Sat
+       minute: "{{ knockd_iptables_gc_cron.minute }}"
+       hour: "{{ knockd_iptables_gc_cron.hour }}"
+       weekday: "{{ knockd_iptables_gc_cron.weekday }}"
        job: 'iptables-save | grep {% for p in secure_ports %} -e "--dport {{ p[0] }} -j ACCEPT" {% endfor %} | sed -e "s/-A /-D /" | xargs -t -I {} bash -c "iptables {}"'

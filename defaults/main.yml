@@ -8,3 +8,8 @@
   open_tcp_flags: ["syn"]
   close_port_sequence: []
   close_tcp_flags: ["syn"]
+
+  knockd_iptables_gc_cron:
+    minute: 0
+    hour: 6
+    weekday: "*"
