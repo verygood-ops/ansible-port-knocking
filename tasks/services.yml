@@ -21,12 +21,15 @@
      iptables: chain=INPUT ctstate=ESTABLISHED,RELATED jump=ACCEPT
      become: yes
 
+   - name: allow open ports traffic
+     shell: iptables -I INPUT 1 -p tcp --dport {{ item }} -j ACCEPT
+     with_items: "{{ open_ports }}"
      # TODO: ansible 2.5 supports rule_num
      # we should add this rule to the top of the chain once we've got new ansible
-   - name: allow open ports traffic
-     iptables: chain=INPUT destination_port={{ item }} protocol=tcp match=tcp jump=ACCEPT
-     become: yes
-     with_items: "{{ open_ports }}"
+   # - name: allow open ports traffic
+   #   iptables: chain=INPUT destination_port={{ item }} protocol=tcp match=tcp jump=ACCEPT
+   #   become: yes
+   #   with_items: "{{ open_ports }}"
 
    - name: drop the rest of traffic
      iptables: chain=INPUT jump=DROP
