@@ -1,52 +1,55 @@
 ---
 
-   - name: stop iptables-persistent
-     service: name=iptables-persistent state=stopped
+  - name: stop iptables-persistent
+    service: name=iptables-persistent state=stopped
 
-   - name: writes the knockd open/close wrappers
-     template: src=templates/{{ item }}.j2 dest=/bin/{{ item }} mode=0740
-     with_items:
-       - knockd_open
-       - knockd_close
+  - name: writes the knockd open/close wrappers
+    template: src=templates/{{ item }}.j2 dest=/bin/{{ item }} mode=0740
+    with_items:
+     - knockd_open
+     - knockd_close
 
-   - name: writes the knockd conf
-     template: src=templates/knockd.conf.j2 dest=/etc/knockd.conf mode=0640
-     notify: restart knockd
+  - name: writes the knockd conf
+    template: src=templates/knockd.conf.j2 dest=/etc/knockd.conf mode=0640
+    notify: restart knockd
 
-   - name: allow loopback interface traffic
-     iptables: chain=INPUT in_interface=lo jump=ACCEPT
-     become: yes
+  - name: allow loopback interface traffic
+    iptables: chain=INPUT in_interface=lo jump=ACCEPT
+    become: yes
 
-   - name: allow established traffic
-     iptables: chain=INPUT ctstate=ESTABLISHED,RELATED jump=ACCEPT
-     become: yes
+  - name: allow established traffic
+    iptables: chain=INPUT ctstate=ESTABLISHED,RELATED jump=ACCEPT
+    become: yes
 
-     # TODO: ansible 2.5 supports rule_num
-     # we should add this rule to the top of the chain once we've got new ansible
-   - name: allow open ports traffic
-     iptables: chain=INPUT destination_port={{ item }} protocol=tcp match=tcp jump=ACCEPT
-     become: yes
-     with_items: "{{ open_ports }}"
+  - name: allow open ports traffic
+    shell: iptables -I INPUT 1 -p tcp --dport {{ item }} -j ACCEPT
+    with_items: "{{ open_ports }}"
+   # TODO: ansible 2.5 supports rule_num
+   # we should add this rule to the top of the chain once we've got new ansible
+   # - name: allow open ports traffic
+   #   iptables: chain=INPUT destination_port={{ item }} protocol=tcp match=tcp jump=ACCEPT
+   #   become: yes
+   #   with_items: "{{ open_ports }}"
 
-   - name: drop the rest of traffic
-     iptables: chain=INPUT jump=DROP
-     become: yes
+  - name: drop the rest of traffic
+    iptables: chain=INPUT jump=DROP
+    become: yes
 
-   - name: save rules
-     shell: iptables-save > /etc/iptables/rules.v4
+  - name: save rules
+    shell: iptables-save > /etc/iptables/rules.v4
 
-   - name: start iptables-persistent
-     service: name=iptables-persistent state=started
+  - name: start iptables-persistent
+    service: name=iptables-persistent state=started
 
-   - name: enable knockd conf
-     replace: dest=/etc/default/knockd regexp='^(START_KNOCKD=)0$' replace='\g<1>1'
-     notify: restart knockd
+  - name: enable knockd conf
+    replace: dest=/etc/default/knockd regexp='^(START_KNOCKD=)0$' replace='\g<1>1'
+    notify: restart knockd
 
-   - name: add iptables knockd cleaner cronjob
-     cron:
-       name: "iptables knockd cleaner"
-       state: present
-       minute: "{{ knockd_iptables_gc_cron.minute }}"
-       hour: "{{ knockd_iptables_gc_cron.hour }}"
-       weekday: "{{ knockd_iptables_gc_cron.weekday }}"
-       job: 'iptables-save | grep {% for p in secure_ports %} -e "--dport {{ p[0] }} -j ACCEPT" {% endfor %} | sed -e "s/-A /-D /" | xargs -t -I {} bash -c "iptables {}"'
+  - name: add iptables knockd cleaner cronjob
+    cron:
+      name: "iptables knockd cleaner"
+      state: present
+      minute: "{{ knockd_iptables_gc_cron.minute }}"
+      hour: "{{ knockd_iptables_gc_cron.hour }}"
+      weekday: "{{ knockd_iptables_gc_cron.weekday }}"
+      job: 'iptables-save | grep {% for p in secure_ports %} -e "--dport {{ p[0] }} -j ACCEPT" {% endfor %} | sed -e "s/-A /-D /" | xargs -t -I {} bash -c "iptables {}"'
