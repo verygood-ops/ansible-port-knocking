@@ -5,5 +5,5 @@
       state: present
       update_cache: yes
     with_items:
-      - 'iptables-persistent'
+      - 'netfilter-persistent'
       - 'knockd'
