@@ -30,7 +30,7 @@
      become: yes
 
    - name: save rules
-     shell: iptables-save > /etc/iptables/rules.v4
+     shell: iptables-save > /etc/iptables_rules.v4
 
    - name: start netfilter-persistent
      service: name=netfilter-persistent state=started
