@@ -1,9 +1,9 @@
 ---
   - name: Install requires packages
     apt:
-      name: '{{ item }}'
-      state: present
+      name: "{{ packages }}"
       update_cache: yes
-    with_items:
+    vars:
+      packages:
       - 'netfilter-persistent'
       - 'knockd'
