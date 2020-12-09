@@ -17,7 +17,7 @@
   - name: support ensX interface names
     set_fact:
       knockd_interface: ens5
-    when: ''"ens5" in ansible_interfaces'
+    when: '"ens5" in ansible_interfaces'
 
   - name: writes the knockd conf
     template: src=templates/knockd.conf.j2 dest=/etc/knockd.conf mode=0640
