@@ -13,3 +13,5 @@
     minute: 0
     hour: 6
     weekday: "*"
+
+  knockd_interface: "eth0" # default
