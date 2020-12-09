@@ -1,49 +1,59 @@
 ---
 
-   - name: stop netfilter-persistent
-     service: name=netfilter-persistent state=stopped
+  - name: stop netfilter-persistent
+    service: name=netfilter-persistent state=stopped
 
-   - name: writes the knockd open/close wrappers
-     template: src=templates/{{ item }}.j2 dest=/bin/{{ item }} mode=0740
-     with_items:
-       - knockd_open
-       - knockd_close
+  - name: writes the knockd open/close wrappers
+    template: src=templates/{{ item }}.j2 dest=/bin/{{ item }} mode=0740
+    with_items:
+    - knockd_open
+    - knockd_close
 
-   - name: writes the knockd conf
-     template: src=templates/knockd.conf.j2 dest=/etc/knockd.conf mode=0640
-     notify: restart knockd
+  - name: get facts
+    action: ec2_metadata_facts
 
-   - name: allow loopback interface traffic
-     iptables: chain=INPUT in_interface=lo jump=ACCEPT
-     become: yes
+    # ugly hack
+    # todo: add frexibility
+  - name: support ensX interface names
+    set_fact:
+      knockd_interface: ens5
+    when: ''"ens5" in ansible_interfaces'
 
-   - name: allow established traffic
-     iptables: chain=INPUT ctstate=ESTABLISHED,RELATED jump=ACCEPT
-     become: yes
+  - name: writes the knockd conf
+    template: src=templates/knockd.conf.j2 dest=/etc/knockd.conf mode=0640
+    notify: restart knockd
 
-   - name: allow open ports traffic
-     shell: iptables -I INPUT 1 -p tcp --dport {{ item }} -j ACCEPT
-     with_items: "{{ open_ports }}"
+  - name: allow loopback interface traffic
+    iptables: chain=INPUT in_interface=lo jump=ACCEPT
+    become: yes
 
-   - name: drop the rest of traffic
-     iptables: chain=INPUT jump=DROP
-     become: yes
+  - name: allow established traffic
+    iptables: chain=INPUT ctstate=ESTABLISHED,RELATED jump=ACCEPT
+    become: yes
 
-   - name: save rules
-     shell: iptables-save > /etc/iptables_rules.v4
+  - name: allow open ports traffic
+    shell: iptables -I INPUT 1 -p tcp --dport {{ item }} -j ACCEPT
+    with_items: "{{ open_ports }}"
 
-   - name: start netfilter-persistent
-     service: name=netfilter-persistent state=started
+  - name: drop the rest of traffic
+    iptables: chain=INPUT jump=DROP
+    become: yes
 
-   - name: enable knockd conf
-     replace: dest=/etc/default/knockd regexp='^(START_KNOCKD=)0$' replace='\g<1>1'
-     notify: restart knockd
+  - name: save rules
+    shell: iptables-save > /etc/iptables_rules.v4
 
-   - name: add iptables knockd cleaner cronjob
-     cron:
-       name: "iptables knockd cleaner"
-       state: present
-       minute: "{{ knockd_iptables_gc_cron.minute }}"
-       hour: "{{ knockd_iptables_gc_cron.hour }}"
-       weekday: "{{ knockd_iptables_gc_cron.weekday }}"
-       job: 'iptables-save | grep {% for p in secure_ports %} -e "--dport {{ p[0] }} -j ACCEPT" {% endfor %} | sed -e "s/-A /-D /" | xargs -t -I {} bash -c "iptables {}"'
+  - name: start netfilter-persistent
+    service: name=netfilter-persistent state=started
+
+  - name: enable knockd conf
+    replace: dest=/etc/default/knockd regexp='^(START_KNOCKD=)0$' replace='\g<1>1'
+    notify: restart knockd
+
+  - name: add iptables knockd cleaner cronjob
+    cron:
+      name: "iptables knockd cleaner"
+      state: present
+      minute: "{{ knockd_iptables_gc_cron.minute }}"
+      hour: "{{ knockd_iptables_gc_cron.hour }}"
+      weekday: "{{ knockd_iptables_gc_cron.weekday }}"
+      job: 'iptables-save | grep {% for p in secure_ports %} -e "--dport {{ p[0] }} -j ACCEPT" {% endfor %} | sed -e "s/-A /-D /" | xargs -t -I {} bash -c "iptables {}"'
